@@ -1,12 +1,38 @@
-ThisBuild / scalaVersion := "2.13.8"
+import play.sbt.routes.RoutesKeys.{InjectedRoutesGenerator, routesGenerator}
 
-ThisBuild / version := "1.0-SNAPSHOT"
+organization := "io.goprime"
+name := "backend-exercise"
 
-lazy val root = (project in file("."))
-  .enablePlugins(PlayJava)
-  .settings(
-    name := """backend-exercise""",
-    libraryDependencies ++= Seq(
-      guice
-    )
-  )
+ThisBuild / scalaVersion := "2.12.9"
+
+ThisBuild / version := "1.0.0"
+
+routesGenerator := InjectedRoutesGenerator
+
+PlayKeys.devSettings += "config.resource" -> "development.conf"
+fork in Test := true
+javaOptions in Test ++= Seq("-Dconfig.file=conf/test.conf", "-Dlogger.resource=test.logback.xml")
+
+
+sources in (Compile, doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
+libraryDependencies ++= Seq(
+  guice,
+
+  "junit" % "junit" % "4.12",
+  "org.mongodb" % "mongodb-driver-sync" % "4.3.0",
+  "org.projectlombok" % "lombok" % "1.18.12",
+  "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.0.0",
+
+  "org.hibernate" % "hibernate-validator" % "6.1.5.Final",
+  "org.glassfish" % "javax.el" % "3.0.0",
+
+  "com.auth0" % "java-jwt" % "3.3.0"
+)
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+resolvers += Resolver.url("Typesafe Ivy releases", url("https://repo.typesafe.com/typesafe/ivy-releases"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.typesafeRepo("releases")
+resolvers += Resolver.sbtPluginRepo("releases")
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala)

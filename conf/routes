@@ -3,7 +3,16 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.index()
+GET           /                        @io.exercise.api.controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET           /assets/*file            controllers.Assets.versioned(path="/public", file: Asset)
+POST          /api/authenticate        @io.exercise.api.controllers.DashboardsPlatform.authenticate(request: Request)
+
+GET           /api/verify              @io.exercise.api.controllers.DashboardsPlatform.verify(request: Request)
+
+
+GET           /api/all                 @io.exercise.api.controllers.DashboardsPlatform.all(request: Request)
+POST          /api/save                @io.exercise.api.controllers.DashboardsPlatform.save(request: Request)
+DELETE        /api/delete              @io.exercise.api.controllers.DashboardsPlatform.delete(request: Request, id:String)
+PUT           /api/update              @io.exercise.api.controllers.DashboardsPlatform.update(request: Request, id:String)
