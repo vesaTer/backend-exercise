@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +15,17 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Dashboard extends BaseModel{
+  @NotNull
+  @Size(min=3, max=20)
   private String name;
+  @NotNull
+  @Size(min=20)
   private String description;
+
   private String parentId;
   private Long createdAt = getCreatedAt();
-  private List<String> readACL = new ArrayList<>();
-  private List<String> writeACL = new ArrayList<>();
+//  private List<String> readACL = new ArrayList<>();
+//  private List<String> writeACL = new ArrayList<>();
 }

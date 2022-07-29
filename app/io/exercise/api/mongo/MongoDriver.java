@@ -2,7 +2,7 @@ package io.exercise.api.mongo;
 
 import akka.Done;
 import akka.actor.CoordinatedShutdown;
-import io.exercise.api.models.User;
+import io.exercise.api.models.*;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
@@ -40,7 +40,7 @@ public abstract class MongoDriver implements IMongoDB {
 
 	/**
 	 * Get a mongo database connection if not already available
-	 * @return
+	 * @return mongo database
 	 */
 	public synchronized MongoDatabase getMongoDatabase() {
 		if (database == null) {
@@ -49,11 +49,19 @@ public abstract class MongoDriver implements IMongoDB {
 
 		ClassModel<User> userClassModel = ClassModel.builder(User.class).enableDiscriminator(true).build();
 
+		ClassModel<Dashboard> dashboardModel = ClassModel.builder(Dashboard.class).enableDiscriminator(true).build();
+		ClassModel<EmailDashboard> emailDashboardModel = ClassModel.builder(EmailDashboard.class).enableDiscriminator(true).build();
+		ClassModel<TextDashboard> textDashboardModel = ClassModel.builder(TextDashboard.class).enableDiscriminator(true).build();
+		ClassModel<LineDashboard> lineDashboardModel = ClassModel.builder(LineDashboard.class).enableDiscriminator(true).build();
+		ClassModel<ImageDashboard> imageDashboardModel = ClassModel.builder(ImageDashboard.class).enableDiscriminator(true).build();
+
+
+
 		CodecProvider pojoCodecProvider =
 				PojoCodecProvider.builder()
 						.conventions(Collections.singletonList(ANNOTATION_CONVENTION))
 						.register("io.exercise.api.models")
-						.register(userClassModel)
+						.register(userClassModel,dashboardModel,emailDashboardModel,textDashboardModel,lineDashboardModel,imageDashboardModel)
 						.automatic(true)
 						.build();
 

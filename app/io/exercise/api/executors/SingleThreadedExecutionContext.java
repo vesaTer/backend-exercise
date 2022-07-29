@@ -4,9 +4,7 @@ import akka.actor.ActorSystem;
 import com.google.inject.Inject;
 import play.libs.concurrent.CustomExecutionContext;
 
-/**
- * Created by agonlohaj on 30 Oct, 2019
- */
+
 public class SingleThreadedExecutionContext extends CustomExecutionContext {
 
 	@Inject
