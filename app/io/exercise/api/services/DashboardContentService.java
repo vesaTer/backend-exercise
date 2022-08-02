@@ -24,7 +24,7 @@ public class DashboardContentService {
     @Inject
     HttpExecutionContext ec;
 
-   private String collection;
+   private String collection = "dashboardContent";
 
     public CompletableFuture<List<DashboardContent>> all(User user, String id) {
         return CompletableFuture.supplyAsync(() -> {

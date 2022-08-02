@@ -30,13 +30,14 @@ public class DashboardService {
     @Inject
     HttpExecutionContext ec;
 
+    private String collection = "dashboards";
 
     public CompletableFuture<List<Dashboard>> all(User user) {
         return CompletableFuture.supplyAsync(() -> {
                     try {
                         List<Dashboard> dashboards = mongoDB
                                 .getMongoDatabase()
-                                .getCollection("dashboards", Dashboard.class)
+                                .getCollection(collection, Dashboard.class)
                                 .find()
                                 .filter(Filters.or(
                                         Filters.in("readACL", user.getId().toString()),
@@ -80,7 +81,7 @@ public class DashboardService {
                 dashboard.getWriteACL().add(user.getId().toString());
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("dashboards", Dashboard.class)
+                        .getCollection(collection, Dashboard.class)
                         .insertOne(dashboard);
                 return dashboard;
             } catch (Exception e) {
@@ -96,7 +97,7 @@ public class DashboardService {
             try {
                 List<Dashboard> dashboards = mongoDB
                         .getMongoDatabase()
-                        .getCollection("dashboards", Dashboard.class)
+                        .getCollection(collection, Dashboard.class)
                         .find()
                         .filter(Filters.in("writeACL", user.getId().toString()))
                         .into(new ArrayList<>());
@@ -107,7 +108,7 @@ public class DashboardService {
 
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("dashboards", Dashboard.class)
+                        .getCollection(collection, Dashboard.class)
                         .replaceOne(Filters.eq("_id", new ObjectId(id)), dashboard);
 
                 return dashboard;
@@ -125,7 +126,7 @@ public class DashboardService {
             try {
                 List<Dashboard> dashboards = mongoDB
                         .getMongoDatabase()
-                        .getCollection("dashboards", Dashboard.class)
+                        .getCollection(collection, Dashboard.class)
                         .find()
                         .filter(Filters.in("writeACL", user.getId().toString()))
                         .into(new ArrayList<>());
@@ -136,7 +137,7 @@ public class DashboardService {
 
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("dashboards", Dashboard.class)
+                        .getCollection(collection, Dashboard.class)
                         .deleteOne(
                                 Filters.eq("_id", new ObjectId(id))
                         );
