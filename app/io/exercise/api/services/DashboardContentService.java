@@ -12,11 +12,11 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Http;
 
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
+
 
 public class DashboardContentService {
     @Inject
@@ -24,9 +24,9 @@ public class DashboardContentService {
     @Inject
     HttpExecutionContext ec;
 
-   private String collection = "dashboardContent";
+   private final String collection = "dashboardContent";
 
-    public CompletableFuture<List<DashboardContent>> all(User user, String id) {
+    public CompletableFuture<List<DashboardContent>> all(User user) {
         return CompletableFuture.supplyAsync(() -> {
                     try {
 
@@ -70,11 +70,8 @@ public class DashboardContentService {
                         .getCollection(collection, DashboardContent.class)
                         .insertOne(dashboardContent);
                 return dashboardContent;
-            }catch (RequestException e){
+            } catch (Exception e){
 
-                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
-            }
-            catch (Exception e) {
                 throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
             }
         }, ec.current());

@@ -33,6 +33,7 @@ import java.util.Base64;
 
 import java.util.concurrent.CompletableFuture;
 
+
 public class DashboardsPlatform extends Controller {
 
     @Inject
@@ -94,7 +95,7 @@ public class DashboardsPlatform extends Controller {
 
             User user1 = mongoDB
                     .getMongoDatabase()
-                    .getCollection("raw", User.class)
+                    .getCollection("users", User.class)
                     .find(
                             eq("_id", new ObjectId(test.get("id").asText()))
                     )

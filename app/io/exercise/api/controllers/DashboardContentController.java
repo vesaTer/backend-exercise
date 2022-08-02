@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.exercise.api.models.DashboardContent;
 
 import io.exercise.api.models.validators.AuthenticatedUser;
+
 import io.exercise.api.models.validators.ValidObject;
 import io.exercise.api.services.DashboardContentService;
 import io.exercise.api.services.SerializationService;
@@ -13,7 +14,8 @@ import play.mvc.*;
 
 import java.util.concurrent.CompletableFuture;
 
-//@AuthenticatedUser
+@AuthenticatedUser
+@ValidObject
 public class DashboardContentController extends Controller {
 
     @Inject
@@ -24,9 +26,9 @@ public class DashboardContentController extends Controller {
 
 
 
-    @AuthenticatedUser
+
     public CompletableFuture<Result> all(Http.Request request, String id) {
-        return service.all(ServiceUtils.getUserFrom(request),id)
+        return service.all(ServiceUtils.getUserFrom(request))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
@@ -34,7 +36,7 @@ public class DashboardContentController extends Controller {
 
 
 
-    @AuthenticatedUser
+    @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
                 .thenCompose((dashboardContents) -> service.save(dashboardContents,ServiceUtils.getUserFrom(request) ))
@@ -43,7 +45,7 @@ public class DashboardContentController extends Controller {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-    @AuthenticatedUser
+
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)

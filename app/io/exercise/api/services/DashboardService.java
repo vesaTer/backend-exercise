@@ -8,7 +8,7 @@ import io.exercise.api.models.Dashboard;
 
 import io.exercise.api.models.DashboardContent;
 import io.exercise.api.models.User;
-import io.exercise.api.models.validators.AuthenticatedUser;
+
 import io.exercise.api.mongo.IMongoDB;
 
 import org.bson.types.ObjectId;
@@ -16,7 +16,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Http;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -30,7 +30,7 @@ public class DashboardService {
     @Inject
     HttpExecutionContext ec;
 
-    private String collection = "dashboards";
+    private final String collection = "dashboards";
 
     public CompletableFuture<List<Dashboard>> all(User user) {
         return CompletableFuture.supplyAsync(() -> {
@@ -43,8 +43,8 @@ public class DashboardService {
                                         Filters.in("readACL", user.getId().toString()),
                                         Filters.in("writeACL", user.getId().toString()),
                                         Filters.and(
-                                                Filters.eq("readACL", List.of(new ArrayList())),
-                                                Filters.eq("writeACL", List.of(new ArrayList())))
+                                                Filters.eq("readACL", List.of(new ArrayList<>())),
+                                                Filters.eq("writeACL", List.of(new ArrayList<>())))
                                 ))
                                 .into(new ArrayList<>());
 
@@ -61,10 +61,8 @@ public class DashboardService {
                                 ))
                                 .into(new ArrayList<>());
 
-                        return dashboards.stream().peek(x -> {
-                                    x.setItems(
-                                            dashboardContents.stream().filter(y -> y.getDashboardID().equals(x.getId())).collect(Collectors.toList()));
-                                }
+                        return dashboards.stream().peek(x -> x.setItems(
+                                dashboardContents.stream().filter(y -> y.getDashboardID().equals(x.getId())).collect(Collectors.toList()))
                         ).collect(Collectors.toList());
                     } catch (Exception e) {
                         throw new CompletionException(new RequestException(Http.Status.INTERNAL_SERVER_ERROR, "SOMETHING WRONG AT DASHBOARD SERVICE " + e.getMessage()));
