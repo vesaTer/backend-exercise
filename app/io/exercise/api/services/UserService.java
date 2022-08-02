@@ -48,7 +48,7 @@ public class UserService {
     public CompletableFuture<User> save(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                user.setPassword(new Hash().createPassword(user.getPassword()));
+//                user.setPassword(new Hash().createPassword(user.getPassword()));
                 mongoDB
                         .getMongoDatabase()
                         .getCollection("users", User.class)

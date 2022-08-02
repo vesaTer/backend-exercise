@@ -8,17 +8,22 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import io.exercise.api.models.Dashboard;
 import io.exercise.api.models.User;
+import io.exercise.api.models.validators.AuthenticatedUser;
 import io.exercise.api.models.validators.ValidDashboard;
+import io.exercise.api.models.validators.ValidObject;
 import io.exercise.api.mongo.IMongoDB;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 
 import static com.mongodb.client.model.Filters.*;
+import static io.exercise.api.utils.Hash.checkPassword;
+import static io.exercise.api.utils.Hash.createPassword;
 
 import io.exercise.api.services.DashboardService;
 import io.exercise.api.services.SerializationService;
 import io.exercise.api.utils.DatabaseUtils;
 
+import io.exercise.api.utils.ServiceUtils;
 import org.bson.types.ObjectId;
 import play.libs.Json;
 import play.mvc.*;
@@ -27,8 +32,6 @@ import play.mvc.*;
 import java.util.Base64;
 
 import java.util.concurrent.CompletableFuture;
-
-
 
 public class DashboardsPlatform extends Controller {
 
@@ -47,9 +50,10 @@ public class DashboardsPlatform extends Controller {
             JsonNode node = request.body().asJson();
             User user = Json.fromJson(node, User.class);
 
+
             User user1 = mongoDB
                     .getMongoDatabase()
-                    .getCollection("raw", User.class)
+                    .getCollection("users", User.class)
                     .find(and(
                             eq("username", user.getUsername()),
                             eq("password", user.getPassword())
@@ -57,19 +61,18 @@ public class DashboardsPlatform extends Controller {
                     .first();
 
 
-//            if (!Hash.checkPassword(userRequest.getPassword(), user.getPassword())) {
-//                throw new CompletionException(new RequestException(Http.Status.UNAUTHORIZED, Json.toJson("Bad Credentials!")));
-//            }
             Algorithm algorithm = Algorithm.HMAC256("secret");
             token = JWT
                     .create()
                     .withClaim("id", user1.getId().toString())
                     .sign(algorithm);
 
+            return ok(Json.toJson(token));
         } catch (Exception e) {
             e.printStackTrace();
+            return badRequest("bad request");
         }
-        return ok(Json.toJson(token));
+
     }
 
 
@@ -86,7 +89,7 @@ public class DashboardsPlatform extends Controller {
             String[] parts = token.split("\\.");
 
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
-            System.out.println(payload);
+//            System.out.println(payload);
             JsonNode test = Json.mapper().readTree(payload);
 
             User user1 = mongoDB
@@ -105,39 +108,39 @@ public class DashboardsPlatform extends Controller {
 
     }
 
-    @ValidDashboard
+
+    @AuthenticatedUser
     public CompletableFuture<Result> all(Http.Request request) {
-        return service.all()
+        return service.all(ServiceUtils.getUserFrom(request))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-    @ValidDashboard
+    @AuthenticatedUser
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request) {
         return serializationService.parseBodyOfType(request, Dashboard.class)
-                .thenCompose((dashboards) -> service.save(dashboards))
+                .thenCompose((dashboards) -> service.save(dashboards,ServiceUtils.getUserFrom(request)))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-    @ValidDashboard
+    @AuthenticatedUser
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, Dashboard.class)
-                .thenCompose(dashboard -> service.update(dashboard, id))
+                .thenCompose(dashboard -> service.update(dashboard, id, ServiceUtils.getUserFrom(request)))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-
-    @ValidDashboard
+    @AuthenticatedUser
     public CompletableFuture<Result> delete(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, Dashboard.class)
-                .thenCompose(dashboard -> service.delete(dashboard, id))
+                .thenCompose(dashboard -> service.delete(dashboard, id, ServiceUtils.getUserFrom(request)))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);

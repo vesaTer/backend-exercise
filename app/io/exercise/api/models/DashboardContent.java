@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
@@ -29,6 +30,7 @@ import org.bson.types.ObjectId;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
 public class DashboardContent extends BaseModel {
+    @BsonId
     @JsonSerialize(using = ObjectIdStringSerializer.class)
     @JsonDeserialize(using = ObjectIdDeSerializer.class)
     ObjectId dashboardID;

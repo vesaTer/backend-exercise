@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -25,7 +25,8 @@ public class Dashboard extends BaseModel{
   private String description;
 
   private String parentId;
+
   private Long createdAt = getCreatedAt();
-//  private List<String> readACL = new ArrayList<>();
-//  private List<String> writeACL = new ArrayList<>();
+  List<DashboardContent> items=new ArrayList<>();
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public @Data class User extends BaseModel {
         private String username;
-        @JsonIgnore
+//        @JsonIgnore
         private String password;
         private List<Role> roles = new ArrayList<>();
 }

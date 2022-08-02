@@ -1,6 +1,7 @@
 package io.exercise.api.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 import javax.validation.constraints.NotNull;
@@ -9,17 +10,15 @@ import java.util.List;
 
 
 @Data
-@BsonDiscriminator(key = "type", value = "email")
+@BsonDiscriminator(key = "type", value = "EMAIL")
+@EqualsAndHashCode(callSuper = true)
+
 public class EmailDashboard extends DashboardContent {
     @NotNull
     String text;
     @NotNull
     String email;
     String subject;
-//    @NotNull
-//    List<String> readACL = new ArrayList<>();
-//    @NotNull
-//    List<String> writeACL = new ArrayList<>();
 
     @Override
     public DashboardType getType() {

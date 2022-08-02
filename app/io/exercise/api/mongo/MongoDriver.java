@@ -54,6 +54,8 @@ public abstract class MongoDriver implements IMongoDB {
 		ClassModel<TextDashboard> textDashboardModel = ClassModel.builder(TextDashboard.class).enableDiscriminator(true).build();
 		ClassModel<LineDashboard> lineDashboardModel = ClassModel.builder(LineDashboard.class).enableDiscriminator(true).build();
 		ClassModel<ImageDashboard> imageDashboardModel = ClassModel.builder(ImageDashboard.class).enableDiscriminator(true).build();
+		ClassModel<DashboardContent> dashboardContentModel = ClassModel.builder(DashboardContent.class).enableDiscriminator(true).build();
+
 
 
 
@@ -61,7 +63,7 @@ public abstract class MongoDriver implements IMongoDB {
 				PojoCodecProvider.builder()
 						.conventions(Collections.singletonList(ANNOTATION_CONVENTION))
 						.register("io.exercise.api.models")
-						.register(userClassModel,dashboardModel,emailDashboardModel,textDashboardModel,lineDashboardModel,imageDashboardModel)
+						.register(userClassModel,dashboardModel,emailDashboardModel,textDashboardModel,lineDashboardModel,imageDashboardModel,dashboardContentModel)
 						.automatic(true)
 						.build();
 

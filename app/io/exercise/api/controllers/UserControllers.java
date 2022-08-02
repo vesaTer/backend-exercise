@@ -2,6 +2,8 @@ package io.exercise.api.controllers;
 
 import com.google.inject.Inject;
 import io.exercise.api.models.User;
+import io.exercise.api.models.validators.AuthenticatedUser;
+import io.exercise.api.models.validators.ValidObject;
 import io.exercise.api.services.SerializationService;
 import io.exercise.api.services.UserService;
 import io.exercise.api.utils.DatabaseUtils;
@@ -12,6 +14,8 @@ import play.mvc.Results;
 
 import java.util.concurrent.CompletableFuture;
 
+
+
 public class UserControllers {
 
     @Inject
@@ -20,13 +24,13 @@ public class UserControllers {
     @Inject
     UserService service;
 
+
     public CompletableFuture<Result> all(Http.Request request) {
         return service.all()
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
-
 
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request) {
@@ -36,7 +40,7 @@ public class UserControllers {
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
-  
+
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, User.class)
@@ -46,7 +50,6 @@ public class UserControllers {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-   
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> delete(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, User.class)
