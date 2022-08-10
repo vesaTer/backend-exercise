@@ -1,10 +1,16 @@
 package io.exercise.api.models;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.w3c.dom.stylesheets.LinkStyle;
+
+import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
+
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,18 +21,24 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Dashboard extends BaseModel {
+    @NotNull
+    @Size(min = 3, max = 20)
+    private String name;
+    @NotNull
+    @Size(min = 20)
+    public String description;
 
-public class Dashboard extends BaseModel{
-  @NotNull
-  @Size(min=3, max=20)
-  private String name;
-  @NotNull
-  @Size(min=20)
-  private String description;
+    public ObjectId parentId;
 
-  private String parentId;
+    List<DashboardContent> items = new ArrayList<>();
 
-  private Long createdAt = getCreatedAt();
-  List<DashboardContent> items=new ArrayList<>();
+    @BsonProperty("children")
+    List<Dashboard> children;
+    @JsonIgnore
+    @BsonProperty("level")
+    Integer level;
+
 
 }

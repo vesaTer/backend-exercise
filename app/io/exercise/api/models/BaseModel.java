@@ -21,16 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(of={"id"})
-@JsonInclude(Include.NON_NULL)
+//@JsonInclude(Include.NON_NULL)
 public @Data class BaseModel implements Cloneable, Serializable {
 	@BsonId
 	@JsonSerialize(using = ObjectIdStringSerializer.class)
 	@JsonDeserialize(using = ObjectIdDeSerializer.class)
 	public ObjectId id;
 
-	@NotNull
 	List<String> readACL = new ArrayList<>();
-	@NotNull
 	List<String> writeACL = new ArrayList<>();
 	@Setter(AccessLevel.NONE)
 	@BsonIgnore

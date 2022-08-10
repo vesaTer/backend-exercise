@@ -47,9 +47,9 @@ public abstract class MongoDriver implements IMongoDB {
 			database = this.connect();
 		}
 
-		ClassModel<User> userClassModel = ClassModel.builder(User.class).enableDiscriminator(true).build();
+		ClassModel<User> userClassModel = ClassModel.builder(User.class).enableDiscriminator(false).build();
 
-		ClassModel<Dashboard> dashboardModel = ClassModel.builder(Dashboard.class).enableDiscriminator(true).build();
+		ClassModel<Dashboard> dashboardModel = ClassModel.builder(Dashboard.class).enableDiscriminator(false).build();
 		ClassModel<EmailDashboard> emailDashboardModel = ClassModel.builder(EmailDashboard.class).enableDiscriminator(true).build();
 		ClassModel<TextDashboard> textDashboardModel = ClassModel.builder(TextDashboard.class).enableDiscriminator(true).build();
 		ClassModel<LineDashboard> lineDashboardModel = ClassModel.builder(LineDashboard.class).enableDiscriminator(true).build();

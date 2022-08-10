@@ -7,6 +7,11 @@ ThisBuild / scalaVersion := "2.12.9"
 
 ThisBuild / version := "1.0.0"
 
+val akkaManagementVersion = "1.1.3"
+val akkaVersion = "2.6.19"
+val akkaHTTPVersion = "10.2.9"
+
+
 routesGenerator := InjectedRoutesGenerator
 
 PlayKeys.devSettings += "config.resource" -> "development.conf"
@@ -27,6 +32,28 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   "org.hibernate" % "hibernate-validator" % "6.1.5.Final",
   "org.glassfish" % "javax.el" % "3.0.0",
+
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
+  "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
+  "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
+  "com.typesafe.akka" %% "akka-distributed-data" % akkaVersion,
+  "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
+  "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion,
+  "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
+  // akka cluster related stuff
+  "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion,
+  "com.lightbend.akka.management" %% "akka-management" % akkaManagementVersion,
+  "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion,
+  "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % akkaManagementVersion,
+  // akka htttp related stuff
+  "com.typesafe.akka" %% "akka-http-core" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-http2-support" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHTTPVersion,
+  "com.typesafe.akka" %% "akka-http" % akkaHTTPVersion,
 
   "com.auth0" % "java-jwt" % "3.3.0"
 )

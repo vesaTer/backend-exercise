@@ -33,7 +33,7 @@ public class DashboardContent extends BaseModel {
     @BsonId
     @JsonSerialize(using = ObjectIdStringSerializer.class)
     @JsonDeserialize(using = ObjectIdDeSerializer.class)
-    ObjectId dashboardID;
+    ObjectId dashboardId;
     @BsonIgnore
     DashboardType type = DashboardType.NONE;
 }

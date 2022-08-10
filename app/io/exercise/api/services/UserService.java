@@ -3,6 +3,7 @@ package io.exercise.api.services;
 import com.google.inject.Inject;
 import com.mongodb.client.model.Filters;
 import io.exercise.api.exceptions.RequestException;
+import io.exercise.api.models.BaseModel;
 import io.exercise.api.models.User;
 import io.exercise.api.mongo.IMongoDB;
 import io.exercise.api.utils.Hash;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Handler;
+import java.util.stream.Collectors;
 
 public class UserService {
 
@@ -23,6 +25,8 @@ public class UserService {
 
     @Inject
     IMongoDB mongoDB;
+
+    String collection="users";
 
     /**
      * Get all the users stored in the database
@@ -33,7 +37,7 @@ public class UserService {
     public CompletableFuture<List<User>> all() {
         return CompletableFuture.supplyAsync(() -> mongoDB
                 .getMongoDatabase()
-                .getCollection("users", User.class)
+                .getCollection(collection, User.class)
                 .find()
                 .into(new ArrayList<>()), ec.current());
     }
@@ -48,10 +52,23 @@ public class UserService {
     public CompletableFuture<User> save(User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-//                user.setPassword(new Hash().createPassword(user.getPassword()));
+                List<String> usernames = mongoDB
+                        .getMongoDatabase()
+                        .getCollection(collection, User.class)
+                        .find()
+                        .into(new ArrayList<>())
+                        .stream()
+                        .map(User::getUsername)
+                        .collect(Collectors.toList());
+
+                if (usernames.contains(user.getUsername())){
+                    throw new CompletionException(new RequestException(Http.Status.BAD_REQUEST,"User with that username already exists!"));
+                }
+
+                user.setPassword(Hash.createPassword(user.getPassword()));
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("users", User.class)
+                        .getCollection(collection, User.class)
                         .insertOne(user);
                 return user;
             } catch (Exception e) {
@@ -72,7 +89,7 @@ public class UserService {
             try {
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("users", User.class)
+                        .getCollection(collection, User.class)
                         .replaceOne(Filters.eq("_id", new ObjectId(id)), user);
 
                 return user;
@@ -94,7 +111,7 @@ public class UserService {
             try {
                 mongoDB
                         .getMongoDatabase()
-                        .getCollection("users", User.class)
+                        .getCollection(collection, User.class)
                         .deleteOne(
                                 Filters.eq("_id", new ObjectId(id))
                         );

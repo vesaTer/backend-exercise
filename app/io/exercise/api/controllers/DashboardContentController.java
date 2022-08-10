@@ -15,7 +15,6 @@ import play.mvc.*;
 import java.util.concurrent.CompletableFuture;
 
 @AuthenticatedUser
-@ValidObject
 public class DashboardContentController extends Controller {
 
     @Inject
@@ -23,8 +22,6 @@ public class DashboardContentController extends Controller {
 
     @Inject
     DashboardContentService service;
-
-
 
 
     public CompletableFuture<Result> all(Http.Request request, String id) {
@@ -36,6 +33,7 @@ public class DashboardContentController extends Controller {
 
 
 
+    @ValidObject
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
@@ -46,6 +44,7 @@ public class DashboardContentController extends Controller {
     }
 
 
+    @ValidObject
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
@@ -58,8 +57,7 @@ public class DashboardContentController extends Controller {
 
     
     public CompletableFuture<Result> delete(Http.Request request, String id) {
-        return serializationService.parseBodyOfType(request, DashboardContent.class)
-                .thenCompose(DashboardContent -> service.delete(DashboardContent, id, ServiceUtils.getUserFrom(request)))
+        return  service.delete(id, ServiceUtils.getUserFrom(request))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
