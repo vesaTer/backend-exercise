@@ -53,10 +53,10 @@ public class UserControllers {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
+
     public CompletableFuture<Result> delete(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, User.class)
-                .thenCompose(user -> service.delete(user, id))
+                .thenCompose(user -> service.delete(id))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);

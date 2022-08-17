@@ -1,6 +1,7 @@
 package io.exercise.api.services;
 
 import com.google.inject.Inject;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import io.exercise.api.exceptions.RequestException;
 import io.exercise.api.models.Dashboard;
@@ -29,15 +30,24 @@ public class DashboardContentService {
 
     private final String collection = "dashboardContent";
 
-    public CompletableFuture<List<DashboardContent>> all(User user) {
+    /**
+     * Get all the dashboard contents of dashboard with id stored in the database that the user has access to
+     * @param user that is sending the request
+     * @return dashboards
+     */
+    public CompletableFuture<List<DashboardContent>> all(String id, int skip, int limit,User user) {
         return CompletableFuture.supplyAsync(() -> {
                     try {
-
                         return mongoDB
                                 .getMongoDatabase()
                                 .getCollection(collection, DashboardContent.class)
-                                .find()
-                                .filter(UserUtils.allAcl(user))
+                                .aggregate(List.of(
+                                        Aggregates.match(UserUtils.allAcl(user)),
+                                        Aggregates.match(Filters.eq("dashboardId", new ObjectId(id))),
+                                        Aggregates.skip(skip),
+                                        Aggregates.limit(limit)
+
+                                ))
                                 .into(new ArrayList<>());
 
                     } catch (Exception e) {
@@ -48,6 +58,12 @@ public class DashboardContentService {
 
     }
 
+    /**
+     * Save a dashboard content in the database
+     * @param dashboardContent to be saved
+     * @param user that is sending the request
+     * @return dashboard content
+     */
 
     public CompletableFuture<DashboardContent> save(DashboardContent dashboardContent, User user) {
         return CompletableFuture.supplyAsync(() -> {
@@ -80,6 +96,13 @@ public class DashboardContentService {
         }, ec.current());
     }
 
+    /**
+     * Update a dashboard content in the database
+     * @param dashboardContent how we want it
+     * @param id of the dashboard content to be updated
+     * @param user that is sending the request
+     * @return dashboardContent updated
+     */
     public CompletableFuture<DashboardContent> update(DashboardContent dashboardContent, String id, User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -102,6 +125,13 @@ public class DashboardContentService {
         }, ec.current());
     }
 
+    /**
+     * Delete dashboard content from database
+     * @param id of the dashboard to be deleted
+     * @param user that is sending the request
+     *
+     * @return deleted dashboard
+     */
     public CompletableFuture<DashboardContent> delete(String id, User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {

@@ -22,8 +22,8 @@ public class DashboardContentController extends Controller {
     @Inject
     DashboardContentService service;
 
-    public CompletableFuture<Result> all(Http.Request request, String id) {
-        return service.all(ServiceUtils.getUserFrom(request))
+    public CompletableFuture<Result> all(Http.Request request, String id, int skip, int limit) {
+        return service.all(id, skip, limit, ServiceUtils.getUserFrom(request))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);

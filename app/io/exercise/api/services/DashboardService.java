@@ -38,7 +38,7 @@ public class DashboardService {
     private final String collection = "dashboards";
 
     /**
-     * Get all the dashboards stored in the database
+     * Get all the dashboards stored in the database that the user has access to
      * @param skip how many dashboards to skip
      * @param limit how many dashboards to get
      * @param user that is sending the request
@@ -227,7 +227,7 @@ public class DashboardService {
 
     /**
      * Delete dashboard from database
-     * @param id of the dashboard to be updated
+     * @param id of the dashboard to be deleted
      * @param user that is sending the request
      *
      * @return deleted dashboard

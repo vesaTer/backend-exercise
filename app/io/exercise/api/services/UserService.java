@@ -46,7 +46,7 @@ public class UserService {
      * Adds a user to the database, if not already in
      *
      * @param user to be added
-     * @return the added user or throws an Internal server error if the user is not added
+     * @return user
      */
 
     public CompletableFuture<User> save(User user) {
@@ -62,7 +62,6 @@ public class UserService {
                         .collect(Collectors.toList());
 
                 if (usernames.contains(user.getUsername())){
-//                    throw new CompletionException(new RequestException(Http.Status.BAD_REQUEST,"User with that username already exists!"));
                     return user;
                 }
 
@@ -102,22 +101,21 @@ public class UserService {
     }
 
     /**
-     * If a user with an id as the param exists in the database, remove it, else throw a not found exception
+     * If a user with an id as the param exists in the database, remove it
      *
      * @param id of the user to be removed
      * @return the removed user
      */
-    public CompletableFuture<User> delete(User user, String id) {
+    public CompletableFuture<User> delete(String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                mongoDB
+             return mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, User.class)
-                        .deleteOne(
+                        .findOneAndDelete(
                                 Filters.eq("_id", new ObjectId(id))
                         );
 
-                return user;
             } catch (Exception e) {
                 throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
             }
