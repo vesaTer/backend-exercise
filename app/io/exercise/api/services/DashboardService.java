@@ -35,13 +35,14 @@ public class DashboardService {
     @Inject
     HttpExecutionContext ec;
 
-    private final String collection = "dashboards";
+    private final String collection = "dashboard";
 
     /**
      * Get all the dashboards stored in the database that the user has access to
-     * @param skip how many dashboards to skip
+     *
+     * @param skip  how many dashboards to skip
      * @param limit how many dashboards to get
-     * @param user that is sending the request
+     * @param user  that is sending the request
      * @return dashboards
      */
     public CompletableFuture<List<Dashboard>> all(int skip, int limit, User user) {
@@ -54,7 +55,7 @@ public class DashboardService {
                                         Aggregates.match(UserUtils.allAcl(user)),
                                         Aggregates.skip(skip),
                                         Aggregates.limit(limit)
-                                        ))
+                                ))
                                 .into(new ArrayList<>());
 
                         List<ObjectId> ids = dashboards.stream().map(BaseModel::getId).collect(Collectors.toList());
@@ -80,12 +81,13 @@ public class DashboardService {
 
     /**
      * Get dashboard hierarchy from database
-     * @param skip how many dashboards to skip
+     *
+     * @param skip  how many dashboards to skip
      * @param limit how many dashboards to show
-     * @param user that is sending the request
+     * @param user  that is sending the request
      * @return dashboard hierarchy
      */
-    public CompletableFuture<List<Dashboard>> hierarchy(int skip, int limit, User user) {
+    public CompletableFuture<List<Dashboard>> hierarchy(int skip, int limit, User user, String id) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 List<Dashboard> dashboards = mongoDB
@@ -131,7 +133,7 @@ public class DashboardService {
                             dashboard.setItems(dashboardContents.stream().filter(y -> y.getDashboardId().equals(dashboard.getId())).collect(Collectors.toList()));
 
                         })
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList()).stream().filter(x->x.getId().equals(new ObjectId(id))).collect(Collectors.toList());
 
 
             } catch (Exception e) {
@@ -142,9 +144,9 @@ public class DashboardService {
 
     /**
      * Helper recursive method to find children of a dashboard on a list of dashboards
-     * @param dashboard to find children to
-     * @param dashboards list of all dashboards
      *
+     * @param dashboard  to find children to
+     * @param dashboards list of all dashboards
      */
     private void findChildren(Dashboard dashboard, List<Dashboard> dashboards) {
         for (Dashboard child : dashboards) {
@@ -158,8 +160,9 @@ public class DashboardService {
 
     /**
      * Save a dashboard in the database
+     *
      * @param dashboard to be saved
-     * @param user that is sending the request
+     * @param user      that is sending the request
      * @return dashboard
      */
     public CompletableFuture<Dashboard> save(Dashboard dashboard, User user) {
@@ -181,9 +184,9 @@ public class DashboardService {
                 if (dashboard1 == null) {
                     dashboard.setParentId(null);
                 }
-                Dashboard d = mongoDB.getMongoDatabase().getCollection(collection, Dashboard.class).find(Filters.eq("_id",dashboard.getId())).first();
-                if(d!=null){
-                  return d;
+                Dashboard d = mongoDB.getMongoDatabase().getCollection(collection, Dashboard.class).find(Filters.eq("_id", dashboard.getId())).first();
+                if (d != null) {
+                    return d;
                 }
                 mongoDB
                         .getMongoDatabase()
@@ -199,16 +202,17 @@ public class DashboardService {
 
     /**
      * Update a dashboard in the database
+     *
      * @param dashboard how we want it
-     * @param id of the dashboard to be updated
-     * @param user that is sending the request
+     * @param id        of the dashboard to be updated
+     * @param user      that is sending the request
      * @return dashboard updated
      */
     public CompletableFuture<Dashboard> update(Dashboard dashboard, String id, User user) {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
-                 mongoDB
+                mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, Dashboard.class)
                         .findOneAndReplace(Filters.and(
@@ -227,36 +231,72 @@ public class DashboardService {
 
     /**
      * Delete dashboard from database
-     * @param id of the dashboard to be deleted
-     * @param user that is sending the request
      *
+     * @param id   of the dashboard to be deleted
+     * @param user that is sending the request
      * @return deleted dashboard
      */
     public CompletableFuture<Dashboard> delete(String id, User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
 
+                System.out.println("ID " + id);
+                System.out.println("User" + user);
+
                 Dashboard dashboard = mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, Dashboard.class)
-                        .findOneAndDelete(Filters.and(
+                        .find(Filters.and(
                                 Filters.eq("_id", new ObjectId(id)),
                                 Filters.or(UserUtils.writeAcl(user),
                                         UserUtils.isPublic(),
-                                        UserUtils.roleWriteAcl(user)))
-                        );
-                if (dashboard != null) {
+                                        UserUtils.roleWriteAcl(user))))
+                        .first();
+
+                System.out.println(dashboard);
+                if (dashboard!=null){
+                    Dashboard dashboards = mongoDB
+                            .getMongoDatabase()
+                            .getCollection(collection, Dashboard.class)
+                            .aggregate(List.of(
+
+                                    new Document("$match",
+                                            new Document("_id",
+                                                    new ObjectId(id))),
+                                    new Document("$graphLookup",
+                                            new Document("from", "dashboards")
+                                                    .append("startWith", "$_id")
+                                                    .append("connectFromField", "_id")
+                                                    .append("connectToField", "parentId")
+                                                    .append("as", "children")
+                                                    .append("depthField", "level"))
+                            )).first();
+
+                    System.out.println(dashboards);
+                    List<ObjectId> ids = dashboards.getChildren().stream().map(BaseModel::getId).collect(Collectors.toList());
+                    ids.add(dashboard.getId());
+
+                    System.out.println(ids);
+                    mongoDB
+                            .getMongoDatabase()
+                            .getCollection(collection, Dashboard.class)
+                            .deleteMany(Filters.in("_id",ids));
+
+
                     mongoDB
                             .getMongoDatabase()
                             .getCollection("dashboardContent", DashboardContent.class)
                             .deleteMany(
-                                    Filters.eq("dashboardId", new ObjectId(id))
+                                    Filters.in("dashboardId", ids)
                             );
+
+
                 }
+
                 return dashboard;
 
             } catch (Exception e) {
-                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
+                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wronge. " + e.getMessage()));
             }
 
         });

@@ -17,9 +17,9 @@ import play.mvc.Http;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-
 
 
 public class DashboardContentService {
@@ -32,18 +32,19 @@ public class DashboardContentService {
 
     /**
      * Get all the dashboard contents of dashboard with id stored in the database that the user has access to
+     *
      * @param user that is sending the request
      * @return dashboards
      */
-    public CompletableFuture<List<DashboardContent>> all(String id, int skip, int limit,User user) {
+    public CompletableFuture<List<DashboardContent>> all(String id, int skip, int limit, User user) {
         return CompletableFuture.supplyAsync(() -> {
                     try {
                         return mongoDB
                                 .getMongoDatabase()
                                 .getCollection(collection, DashboardContent.class)
                                 .aggregate(List.of(
-                                        Aggregates.match(UserUtils.allAcl(user)),
                                         Aggregates.match(Filters.eq("dashboardId", new ObjectId(id))),
+                                        Aggregates.match(UserUtils.allAcl(user)),
                                         Aggregates.skip(skip),
                                         Aggregates.limit(limit)
 
@@ -60,14 +61,16 @@ public class DashboardContentService {
 
     /**
      * Save a dashboard content in the database
+     *
      * @param dashboardContent to be saved
-     * @param user that is sending the request
+     * @param user             that is sending the request
      * @return dashboard content
      */
 
-    public CompletableFuture<DashboardContent> save(DashboardContent dashboardContent, User user) {
+    public CompletableFuture<DashboardContent> save(DashboardContent dashboardContent, String id, User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
+
                 Dashboard dashboard = mongoDB
                         .getMongoDatabase()
                         .getCollection("dashboards", Dashboard.class)
@@ -77,6 +80,7 @@ public class DashboardContentService {
                 if (dashboard == null) {
                     throw new RequestException(Http.Status.NOT_FOUND, "No dashboard matches ");
                 }
+
                 if (!dashboardContent.getReadACL().contains(user.getId().toString())) {
                     dashboardContent.getReadACL().add(user.getId().toString());
                 }
@@ -84,6 +88,7 @@ public class DashboardContentService {
                     dashboardContent.getWriteACL().add(user.getId().toString());
                 }
 
+                dashboardContent.setDashboardId(new ObjectId(id));
                 mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, DashboardContent.class)
@@ -91,16 +96,17 @@ public class DashboardContentService {
                 return dashboardContent;
             } catch (Exception e) {
 
-                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
+                throw new CompletionException(new RequestException(Http.Status.BAD_REQUEST, "Something went wrong. " + e.getMessage()));
             }
         }, ec.current());
     }
 
     /**
      * Update a dashboard content in the database
+     *
      * @param dashboardContent how we want it
-     * @param id of the dashboard content to be updated
-     * @param user that is sending the request
+     * @param id               of the dashboard content to be updated
+     * @param user             that is sending the request
      * @return dashboardContent updated
      */
     public CompletableFuture<DashboardContent> update(DashboardContent dashboardContent, String id, User user) {
@@ -108,7 +114,7 @@ public class DashboardContentService {
             try {
 
                 dashboardContent.setId(null);
-                 mongoDB
+                mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, DashboardContent.class)
                         .findOneAndReplace(Filters.and(
@@ -117,8 +123,8 @@ public class DashboardContentService {
                                         UserUtils.isPublic(),
                                         UserUtils.roleWriteAcl(user))), dashboardContent
                         );
-                 return dashboardContent;
-            }  catch (Exception e) {
+                return dashboardContent;
+            } catch (Exception e) {
                 throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
             }
 
@@ -127,9 +133,9 @@ public class DashboardContentService {
 
     /**
      * Delete dashboard content from database
-     * @param id of the dashboard to be deleted
-     * @param user that is sending the request
      *
+     * @param id   of the dashboard to be deleted
+     * @param user that is sending the request
      * @return deleted dashboard
      */
     public CompletableFuture<DashboardContent> delete(String id, User user) {

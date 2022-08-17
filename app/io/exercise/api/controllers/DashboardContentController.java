@@ -32,7 +32,7 @@ public class DashboardContentController extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
-                .thenCompose((dashboardContents) -> service.save(dashboardContents, ServiceUtils.getUserFrom(request)))
+                .thenCompose((dashboardContents) -> service.save(dashboardContents, id, ServiceUtils.getUserFrom(request)))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);

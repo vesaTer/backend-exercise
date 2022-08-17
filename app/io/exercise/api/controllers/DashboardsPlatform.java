@@ -34,8 +34,8 @@ public class DashboardsPlatform extends Controller {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
-    public CompletableFuture<Result> hierarchy(Http.Request request,int skip, int limit) {
-        return service.hierarchy(skip, limit,ServiceUtils.getUserFrom(request))
+    public CompletableFuture<Result> hierarchy(Http.Request request,int skip, int limit, String id) {
+        return service.hierarchy(skip, limit,ServiceUtils.getUserFrom(request), id)
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
