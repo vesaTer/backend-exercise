@@ -239,10 +239,6 @@ public class DashboardService {
     public CompletableFuture<Dashboard> delete(String id, User user) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-
-                System.out.println("ID " + id);
-                System.out.println("User" + user);
-
                 Dashboard dashboard = mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, Dashboard.class)
@@ -272,11 +268,10 @@ public class DashboardService {
                                                     .append("depthField", "level"))
                             )).first();
 
-                    System.out.println(dashboards);
+
                     List<ObjectId> ids = dashboards.getChildren().stream().map(BaseModel::getId).collect(Collectors.toList());
                     ids.add(dashboard.getId());
 
-                    System.out.println(ids);
                     mongoDB
                             .getMongoDatabase()
                             .getCollection(collection, Dashboard.class)
@@ -289,8 +284,6 @@ public class DashboardService {
                             .deleteMany(
                                     Filters.in("dashboardId", ids)
                             );
-
-
                 }
 
                 return dashboard;
