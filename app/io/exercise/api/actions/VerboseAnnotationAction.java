@@ -8,7 +8,7 @@ import play.mvc.Result;
 import java.util.concurrent.CompletionStage;
 
 /**
- * Created by Agon Lohaj on 09/08/2020
+ *
  */
 public class VerboseAnnotationAction extends Action<VerboseAnnotation> {
 

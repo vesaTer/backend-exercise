@@ -11,7 +11,8 @@ import javax.validation.constraints.NotNull;
 @BsonDiscriminator(key = "type", value = "TEXT")
 @EqualsAndHashCode(callSuper = true)
 
-public class TextDashboard extends DashboardContent{
+public class
+TextDashboard extends DashboardContent{
     @NotNull
     private String text;
     @Override

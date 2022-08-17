@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Created by agonlohaj on 04 Sep, 2020
+ *
  */
 public class ChatActorProtocol {
 

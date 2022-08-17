@@ -30,7 +30,6 @@ public class HomeController extends Controller {
     @Inject
     HttpExecutionContext ec;
 
-
     @VerboseAnnotation( false )
     public CompletableFuture<Result> index() {
         return CompletableFuture.supplyAsync(() -> ok(views.html.index.render()), ec.current());

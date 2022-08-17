@@ -3,7 +3,7 @@ package io.exercise.api.services;
 import com.google.inject.Inject;
 import com.mongodb.client.model.Filters;
 import io.exercise.api.exceptions.RequestException;
-import io.exercise.api.models.BaseModel;
+
 import io.exercise.api.models.User;
 import io.exercise.api.mongo.IMongoDB;
 import io.exercise.api.utils.Hash;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.logging.Handler;
+
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -31,7 +31,7 @@ public class UserService {
     /**
      * Get all the users stored in the database
      *
-     * @return users in cache
+     * @return users
      */
 
     public CompletableFuture<List<User>> all() {
@@ -62,7 +62,8 @@ public class UserService {
                         .collect(Collectors.toList());
 
                 if (usernames.contains(user.getUsername())){
-                    throw new CompletionException(new RequestException(Http.Status.BAD_REQUEST,"User with that username already exists!"));
+//                    throw new CompletionException(new RequestException(Http.Status.BAD_REQUEST,"User with that username already exists!"));
+                    return user;
                 }
 
                 user.setPassword(Hash.createPassword(user.getPassword()));

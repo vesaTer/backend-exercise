@@ -5,9 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Data
 @BsonDiscriminator(key = "type", value = "EMAIL")

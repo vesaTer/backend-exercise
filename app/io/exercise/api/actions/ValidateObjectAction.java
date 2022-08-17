@@ -19,11 +19,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 
-
 public class ValidateObjectAction extends Action<ValidObject> {
 
     @Override
-    @BodyParser.Of(BodyParser.Json.class)
     public CompletionStage<Result> call(Http.Request request) {
         try {
             JsonNode body = request.body().asJson();
@@ -38,7 +36,7 @@ public class ValidateObjectAction extends Action<ValidObject> {
         } catch (Exception ex) {
             ex.printStackTrace();
             ObjectNode response = Json.newObject();
-            response.put("message", "Invalid object supplied, cannot cast to type Dashboard.");
+            response.put("message", "Invalid object supplied, cannot cast to type.");
             return CompletableFuture.completedFuture(badRequest(response));
         }
     }

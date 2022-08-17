@@ -21,6 +21,7 @@ public class DatabaseModule extends AbstractModule {
     protected void configure() {
 		String mode = config.getString("mode");
 		Logger.of(this.getClass()).debug("Runnning on mode {}", mode);
+
 		if (mode.equalsIgnoreCase("test")) {
             bind(IMongoDB.class).to(InMemoryMongoDB.class).asEagerSingleton();
             return;

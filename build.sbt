@@ -22,12 +22,18 @@ javaOptions in Test ++= Seq("-Dconfig.file=conf/test.conf", "-Dlogger.resource=t
 sources in (Compile, doc) := Seq.empty
 publishArtifact in (Compile, packageDoc) := false
 libraryDependencies ++= Seq(
+  javaWs,
   guice,
+  ehcache,
+  javaJdbc,
+  filters,
 
   "junit" % "junit" % "4.12",
   "org.mongodb" % "mongodb-driver-sync" % "4.3.0",
   "org.projectlombok" % "lombok" % "1.18.12",
   "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "2.0.0",
+
+
 
   "org.mindrot" % "jbcrypt" % "0.3m",
   "org.hibernate" % "hibernate-validator" % "6.1.5.Final",

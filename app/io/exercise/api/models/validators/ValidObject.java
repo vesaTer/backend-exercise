@@ -1,7 +1,5 @@
 package io.exercise.api.models.validators;
 
-
-
 import io.exercise.api.actions.ValidateObjectAction;
 
 import play.mvc.With;

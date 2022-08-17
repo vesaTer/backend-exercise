@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 
-
 public class ServiceUtils {
 
     public static String getTokenFromRequest(Http.Request request) {

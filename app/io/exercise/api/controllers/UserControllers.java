@@ -2,7 +2,7 @@ package io.exercise.api.controllers;
 
 import com.google.inject.Inject;
 import io.exercise.api.models.User;
-import io.exercise.api.models.validators.AuthenticatedUser;
+
 import io.exercise.api.models.validators.ValidObject;
 import io.exercise.api.services.SerializationService;
 import io.exercise.api.services.UserService;
@@ -13,7 +13,6 @@ import play.mvc.Result;
 import play.mvc.Results;
 
 import java.util.concurrent.CompletableFuture;
-
 
 
 public class UserControllers {
@@ -32,6 +31,9 @@ public class UserControllers {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
+
+
+    @ValidObject(type = User.class)
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request) {
         return serializationService.parseBodyOfType(request, User.class)
@@ -41,6 +43,7 @@ public class UserControllers {
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
 
+    @ValidObject(type = User.class)
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, User.class)

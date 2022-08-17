@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(of={"id"})
-//@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_NULL)
 public @Data class BaseModel implements Cloneable, Serializable {
 	@BsonId
 	@JsonSerialize(using = ObjectIdStringSerializer.class)

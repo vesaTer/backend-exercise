@@ -30,7 +30,7 @@ import org.bson.types.ObjectId;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
 public class DashboardContent extends BaseModel {
-    @BsonId
+
     @JsonSerialize(using = ObjectIdStringSerializer.class)
     @JsonDeserialize(using = ObjectIdDeSerializer.class)
     ObjectId dashboardId;

@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import play.libs.concurrent.CustomExecutionContext;
 
 /**
- * Created by Agon Lohaj on 30 Oct, 2019
+ *
  */
 public class MongoExecutionContext extends CustomExecutionContext {
 

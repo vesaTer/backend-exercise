@@ -85,7 +85,7 @@ public class DashboardContentService {
             try {
 
                 dashboardContent.setId(null);
-                return mongoDB
+                 mongoDB
                         .getMongoDatabase()
                         .getCollection(collection, DashboardContent.class)
                         .findOneAndReplace(Filters.and(
@@ -94,8 +94,9 @@ public class DashboardContentService {
                                         UserUtils.isPublic(),
                                         UserUtils.roleWriteAcl(user))), dashboardContent
                         );
+                 return dashboardContent;
             }  catch (Exception e) {
-                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrongg. " + e.getMessage()));
+                throw new CompletionException(new RequestException(Http.Status.NOT_FOUND, "Something went wrong. " + e.getMessage()));
             }
 
         }, ec.current());

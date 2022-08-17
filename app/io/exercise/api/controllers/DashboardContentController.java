@@ -16,13 +16,11 @@ import java.util.concurrent.CompletableFuture;
 
 @AuthenticatedUser
 public class DashboardContentController extends Controller {
-
     @Inject
     SerializationService serializationService;
 
     @Inject
     DashboardContentService service;
-
 
     public CompletableFuture<Result> all(Http.Request request, String id) {
         return service.all(ServiceUtils.getUserFrom(request))
@@ -30,21 +28,16 @@ public class DashboardContentController extends Controller {
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
-
-
-
-    @ValidObject
+    @ValidObject(type = DashboardContent.class)
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> save(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
-                .thenCompose((dashboardContents) -> service.save(dashboardContents,ServiceUtils.getUserFrom(request) ))
+                .thenCompose((dashboardContents) -> service.save(dashboardContents, ServiceUtils.getUserFrom(request)))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
-
-
-    @ValidObject
+    @ValidObject(type = DashboardContent.class)
     @BodyParser.Of(BodyParser.Json.class)
     public CompletableFuture<Result> update(Http.Request request, String id) {
         return serializationService.parseBodyOfType(request, DashboardContent.class)
@@ -53,11 +46,8 @@ public class DashboardContentController extends Controller {
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);
     }
-
-
-    
     public CompletableFuture<Result> delete(Http.Request request, String id) {
-        return  service.delete(id, ServiceUtils.getUserFrom(request))
+        return service.delete(id, ServiceUtils.getUserFrom(request))
                 .thenCompose((data) -> serializationService.toJsonNode(data))
                 .thenApply(Results::ok)
                 .exceptionally(DatabaseUtils::throwableToResult);

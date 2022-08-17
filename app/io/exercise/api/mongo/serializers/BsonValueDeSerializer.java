@@ -18,13 +18,11 @@ public class BsonValueDeSerializer extends JsonDeserializer<BsonValue> {
 
 	@Override
 	public BsonValue deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		// TODO Auto-generated method stub
 		JsonNode which = jp.getCodec().readTree(jp);
 		return this.toBsonValue(which);
 	}
 
 	private BsonValue toBsonValue(JsonNode which) throws IOException, JsonProcessingException {
-		// TODO Auto-generated method stub
 		if (which == null) {
 			return new BsonNull();
 		}
@@ -45,7 +43,7 @@ public class BsonValueDeSerializer extends JsonDeserializer<BsonValue> {
 				}
 				break;
 			case OBJECT: {
-				// TODO: Check Object ID can be one of the objects
+
 				ObjectNode object = (ObjectNode) which;
 				BsonDocument result = new BsonDocument();
 				Iterator<Entry<String, JsonNode>> iterator = object.fields();

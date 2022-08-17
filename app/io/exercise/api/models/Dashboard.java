@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
@@ -32,6 +33,7 @@ public class Dashboard extends BaseModel {
 
     public ObjectId parentId;
 
+    @BsonIgnore
     List<DashboardContent> items = new ArrayList<>();
 
     @BsonProperty("children")
@@ -39,6 +41,11 @@ public class Dashboard extends BaseModel {
     @JsonIgnore
     @BsonProperty("level")
     Integer level;
+
+    public Dashboard(String name, String description){
+        this.name=name;
+        this.description=description;
+    }
 
 
 }

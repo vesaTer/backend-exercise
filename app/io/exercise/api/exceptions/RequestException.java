@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 
 /**
- * Created by Agon on 12/16/2016.
+ *
  */
 @ToString
 public @Data class RequestException extends Exception {

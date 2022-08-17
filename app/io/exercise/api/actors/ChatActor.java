@@ -21,12 +21,13 @@ public class ChatActor extends AbstractActor {
     /**
      * String messages as constants
      */
-    private static final String JOINED_ROOM = "Someone Joined the Room!";
-    private static final String LEFT_ROOM = "Someone Left the Room!";
+    private static final String JOINED_ROOM = " joined the room!";
+    private static final String LEFT_ROOM = " left the room!";
     private static final String PING = "PING";
     private static final String PONG = "PONG";
+
     private final User user;
-    private static boolean write;
+    private boolean write;
     /**
      * Mediator
      */
@@ -137,7 +138,7 @@ public class ChatActor extends AbstractActor {
     private void broadcast(String message) {
         // Publish new content on this room!
         if (!write){
-            out.tell("not allowed",
+            out.tell("not allowed to text",
                     getSelf());
             return;
         }

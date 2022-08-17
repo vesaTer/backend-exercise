@@ -33,7 +33,6 @@ public class BsonValueSerializer extends JsonSerializer<BsonValue> {
             	jgen.writeString(value.asString().getValue());
             	break;
         	case DECIMAL128:
-        		// TODO: test this
             	jgen.writeNumber(Double.parseDouble(value.asDecimal128().getValue().toString()));
             	break;
         	case DOCUMENT:
